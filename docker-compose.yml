@@ -17,16 +17,17 @@ services:
       - ./mysql:/var/lib/mysql
   node:
     build: .
-    entrypoint: wait-for-it.sh tcp://database:3306 -- entrypoint.sh
+    # entrypoint: ./wait-for-it.sh tcp://database:3306 -- ./entrypoint.sh
     volumes:
       - .:/app
     ports:
       - 3000:3000
+    expose:
+      - 3000
     depends_on:
       - database
   nginx:
     image: nginx
-    entrypoint: wait-for-it.sh tcp://node:3000 -- entrypoint.sh
     ports:
       - 8080:8080
     volumes:
