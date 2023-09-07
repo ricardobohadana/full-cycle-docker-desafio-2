@@ -1,0 +1,36 @@
+version: "3.5"
+
+services:
+  database:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+  node:
+    build: .
+    entrypoint: wait-for-it.sh tcp://database:3306 -- entrypoint.sh
+    volumes:
+      - .:/app
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+  nginx:
+    image: nginx
+    entrypoint: wait-for-it.sh tcp://node:3000 -- entrypoint.sh
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/:/etc/nginx/
+    depends_on:
+      - node
+      - database
