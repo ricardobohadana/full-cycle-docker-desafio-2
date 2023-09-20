@@ -18,6 +18,8 @@ services:
   node:
     build: .
     restart: always
+    volumes:
+      - .:/usr/app
     ports:
       - 3000:3000
     expose:
